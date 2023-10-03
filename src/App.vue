@@ -6,7 +6,7 @@ const showModal = ref(false);
 const newNote = ref("");
 const errorMessage = ref("");
 const notes = ref([]);
-let noteId = 1; 
+let noteId = 1;
 
 const getRandomColor = () => {
   const hue = Math.floor(Math.random() * 360);
@@ -22,7 +22,7 @@ const addNote = () => {
     errorMessage.value = "Note needs to have 10 characters or more";
   } else {
     const newNoteData = {
-      nid: noteId++, // Assign a unique id to the new note
+      id: noteId++, // Assign a unique id to the new note
       text: newNote.value,
       color: getRandomColor(),
       date: new Date(),
@@ -43,18 +43,54 @@ const addNote = () => {
       });
   }
 };
-const removeNote = (nid) => {
-  const index = notes.value.findIndex(note => note.nid === nid);
+
+const removeNote = (id) => {
+  const index = notes.value.findIndex((note) => note.id === id);
   if (index !== -1) {
-    notes.value.splice(index, 1);
+    const noteToDelete = notes.value[index];
+
+    // Send a DELETE request to remove the note from the server
+    axios
+      .delete(`http://localhost:9000/notes/${id}`)
+      .then(() => {
+        // Note deleted successfully on the server, now remove it from the UI
+        notes.value.splice(index, 1);
+
+        // Fetch the updated notes from the server to refresh the data
+        fetchNotes();
+      })
+      .catch((error) => {
+        console.error("Error deleting note:", error);
+      });
   }
-}
+};
+
+const fetchNotes = () => {
+  axios
+    .get("http://localhost:9000/notes")
+    .then((response) => {
+      // Assuming your date is stored as a string, parse it as a Date object
+      notes.value = response.data.map((note) => ({
+        ...note,
+        date: new Date(note.date), // Parse date as Date object
+      }));
+    })
+    .catch((error) => {
+      console.error("Error fetching notes:", error);
+    });
+};
+
+
+// Call the 'fetchNotes' function when the component is mounted
+onMounted(() => {
+  fetchNotes();
+});
 
 </script>
 
 <template>
   <main>
-    <div v-if="showModal" class="overlay">
+    <div v-if="showModal" class="overlay show-modal">
       <div class="modal">
         <p @click="showModal = false">x</p>
         <textarea v-model.trim="newNote" />
@@ -68,11 +104,14 @@ const removeNote = (nid) => {
         <button @click="showModal = true">+</button>
       </header>
       <div class="cards-container">
-        <div v-for="note in notes" class="card" :style="{ backgroundColor: note.color }">
-          <p class="remove" @click="removeNote(note.nid)">x</p>
+        <div v-for="note in notes" :key="note.id" class="card" :style="{ backgroundColor: note.color }"
+          v-if="notes.length > 0">
+          <p class="remove" @click="removeNote(note.id)">x</p>
           <p class="main-text">{{ note.text }}</p>
-          <p class="date">{{ note.date.toLocaleDateString("en-US") }}</p>
+          <p class="date">{{ note.date.toLocaleDateString('en-US') }}</p>
+
         </div>
+
       </div>
     </div>
   </main>
@@ -82,13 +121,18 @@ const removeNote = (nid) => {
 .container {
   max-width: 1000px;
   padding: 10px;
-  margin: 0 auto
+  margin: 0 auto;
 }
 
 h1 {
   font-weight: bold;
   margin-bottom: 25px;
   font-size: 75px;
+}
+
+h1:hover {
+  color: blueviolet;
+  transition: color 0.2s ease;
 }
 
 .card {
@@ -103,15 +147,27 @@ h1 {
   margin-right: 20px;
   margin-bottom: 20px;
   position: relative;
-  overflow: hidden; 
+  overflow: hidden;
+  transition: transform 0.2s ease-in-out, background-color 0.2s ease-in-out;
+
+}
+
+.card:hover {
+  transform: scale(1.05);
+  background-color: lightgoldenrodyellow;
+}
+
+.card:active {
+  transform: scale(0.95);
+  background-color: lightcoral;
 }
 
 .main-text {
-  line-height: 1.25;
-  font-size: 17.5px;
+  line-height: 1.2;
+  font-size: 16px;
   font-weight: bold;
-  word-wrap: break-word; 
-  white-space: normal; 
+  word-wrap: break-word;
+  white-space: normal;
 }
 
 .date {
@@ -137,12 +193,31 @@ header button {
   color: white;
   font-size: 20px;
   font-weight: bold;
+  transition: transform 0.2s ease-in-out;
+}
 
+header button:hover {
+  transform: scale(1.1);
+  background-color: blueviolet;
+}
+
+header button:active {
+  transform: scale(0.9);
+  background-color: gray;
 }
 
 .cards-container {
   display: flex;
   flex-wrap: wrap;
+}
+
+.card-enter-active {
+  transition: transform 0.5s ease, opacity 0.5s ease;
+}
+
+.card-enter-from {
+  transform: translateY(-20px);
+  opacity: 0;
 }
 
 .overlay {
@@ -172,6 +247,12 @@ main {
   position: relative;
   display: flex;
   flex-direction: column;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.show-modal .modal {
+  opacity: 1;
 }
 
 .modal button {
@@ -183,6 +264,12 @@ main {
   color: white;
   cursor: pointer;
   margin-top: 15px;
+  transition: transform 0.2s ease-in-out;
+
+}
+
+.modal button:active {
+  transform: scale(0.95);
 }
 
 .modal p {
@@ -204,8 +291,18 @@ main {
   cursor: pointer;
   font-weight: 600;
   margin-right: 5px;
+  transition: transform 0.2s ease-in-out;
 }
 
+.remove:hover {
+  transform: scale(1.1);
+  color: red;
+}
+
+.remove:active {
+  transform: scale(0.9);
+  color: darkred;
+}
 
 .error {
   color: rgb(248, 0, 0);

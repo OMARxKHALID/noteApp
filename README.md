@@ -2,7 +2,7 @@
 
 [NOTEAPP](https://github.com/OMARxKHALID/noteApp/assets/146068209/142aee19-160b-40c7-8578-92bb0bc1ca83)
 
-#Description
+Description
 The Notes App is a simple and intuitive web application for managing your notes. Whether you need to jot down ideas, create to-do lists, or keep track of important information, this app provides an easy-to-use interface to help you stay organized.
 
 #Features

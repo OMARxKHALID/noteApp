@@ -5,24 +5,36 @@
 the notes app is a simple and intuitive web application for managing your notes. whether you need to jot down ideas, create to-do lists, or keep track of important information, this app provides an easy-to-use interface to help you stay organized.
 
 # Features
-create notes: quickly create new notes with a customizable title and content.
-colorful notes: each note is assigned a random color to make them visually distinct and appealing.
-character limit: ensure your notes are concise by setting a character limit, helping you focus on the most important information.
-date tracking: keep track of when each note was created with an automatically generated date timestamp.
-remove notes: easily delete notes that you no longer need, keeping your workspace clutter-free.
-responsive design: the app is designed to work seamlessly on both desktop and mobile devices.
-data persistence: your notes are stored on a server, allowing you to access them from anywhere.
+
+ - **create notes:** quickly create new notes with a customizable title and content.
+
+ - **colorful notes:** each note is assigned a random color to make them visually distinct and appealing.
+ - **character limit:** ensure your notes are concise by setting a character limit, helping you focus on the most important information.
+ - **date tracking:** keep track of when each note was created with an automatically generated date timestamp.
+ - **remove notes:** easily delete notes that you no longer need, keeping your workspace clutter-free.
+- **responsive design:** the app is designed to work seamlessly on both desktop and mobile devices.
+
+- **data persistence:** your notes are stored on a server, allowing you to access them from anywhere.
 
 # Getting Started
 to use the notes app, follow these steps:
 
 clone the repository to your local machine.
-install any necessary dependencies using npm install.
-run the app locally using npm run serve.
-access the app in your web browser at http://localhost:8080 (or another port if specified).
+```bash
+git clone https://github.com/OMARxKHALID/noteApp.git
+```
+install any necessary dependencies.
+```bash
+npm install
+```
+run the app locally using.
+```bash
+npm run dev
+```
+access the app in your web browser at http://localhost:5173 (or another port if specified).
 
 # Usage
-click the "+" button in the header to add a new note.
+click the **"+"** button in the header to add a new note.
 enter a title and content for your note.
 click "add note" to save it.
 hover over a note to reveal options to delete it.
